@@ -1,0 +1,74 @@
+Sub StockScan()
+
+'define the first stock and second stock to recognize a change
+Dim firstStock As String
+Dim nextStock As String
+
+'define total stock volume
+Dim totalVol As Double
+    
+'define open and clsoe prices for change calculation
+Dim openPrice As Double
+Dim closePrice As Double
+
+'define i and lastRow for last row calculation
+Dim i As Long
+Dim lastRow As Long
+
+For Each ws In Worksheets
+
+    'assign starting volume value, stock number, starting price position and last row
+    totalVolume = 0
+    stockNumber = 1
+    openPrice = ws.Cells(2, 3).Value
+    lastRow = ws.Cells(Rows.Count, "A").End(xlUp).Row
+    
+    'add new columns
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Stock Volume"
+    
+    For i = 2 To lastRow
+        'assign value to first and next stock
+        firstStock = ws.Cells(i, 1).Value
+        nextStock = ws.Cells(i + 1, 1).Value
+        
+        If nextStock = firstStock Then
+            totalVol = totalVol + ws.Cells(i, 7).Value
+        Else
+            totalVol = totalVol + ws.Cells(i, 7).Value
+            closePrice = ws.Cells(i, 6).Value
+            Change = closePrice - openPrice
+            percentChange = Change / openPrice
+            
+            'input data into columns
+            ws.Cells(stockNumber + 1, 9).Value = firstStock
+            ws.Cells(stockNumber + 1, 10).Value = Change
+            ws.Cells(stockNumber + 1, 11).Value = percentChange
+            ws.Cells(stockNumber + 1, 12).Value = totalVol
+            
+            'reset values
+            stockNumber = stockNumber + 1
+            totalVol = 0
+            openPrice = ws.Cells(i + 1, 3).Value
+        End If
+        
+    'change colors of cells
+        Select Case Change
+                Case Is > 0
+                    ws.Range("J" & 2 + j).Interior.ColorIndex = 4
+                Case Is < 0
+                    ws.Range("J" & 2 + j).Interior.ColorIndex = 3
+                Case Else
+                    ws.Range("J" & 2 + j).Interior.ColorIndex = 0
+        End Select
+    
+        
+    Next i
+Next ws
+            
+End Sub
+
+
+
